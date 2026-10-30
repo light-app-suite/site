@@ -1,0 +1,25 @@
+---
+import Logo from './Logo.astro';
+import T from './T.astro';
+import { apps } from '../data/apps';
+import { ui } from '../data/ui';
+import { u } from '../data/url';
+
+interface Props { padTop?: boolean }
+const { padTop = false } = Astro.props;
+---
+<section class="wrap" style={padTop ? 'padding-top:72px' : undefined}>
+  <div class="list-head">
+    <h2><T t={ui.appsTitle} /></h2>
+    <span class="mono"><T t={ui.appsSub} /></span>
+  </div>
+  {apps.map((a) => (
+    <a href={u(`${a.id}/`)} class="row tint" style={`--h:${a.h1}`}>
+      <span class="n mono">{a.n}</span>
+      <Logo app={a.id} size={64} />
+      <div><div class="nm">{a.name}</div><div class="kd mono"><T t={a.kind} /></div></div>
+      <p><T t={a.short} /></p>
+      <span class="arrow">→</span>
+    </a>
+  ))}
+</section>

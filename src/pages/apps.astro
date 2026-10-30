@@ -1,0 +1,9 @@
+---
+import Base from '../layouts/Base.astro';
+import AppList from '../components/AppList.astro';
+import { ui } from '../data/ui';
+---
+<Base title="Apps" path="apps/" description={ui.desc.en}>
+  <AppList padTop />
+  <div style="height:128px"></div>
+</Base>

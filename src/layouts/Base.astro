@@ -1,0 +1,126 @@
+---
+import '@fontsource-variable/bricolage-grotesque';
+import '@fontsource/dm-mono/400.css';
+import '@fontsource/dm-mono/500.css';
+import '../styles/global.css';
+import Logo from '../components/Logo.astro';
+import T from '../components/T.astro';
+import { apps, ORG } from '../data/apps';
+import { ui } from '../data/ui';
+import { u } from '../data/url';
+
+interface Props { title?: string; description?: string; path?: string; image?: string }
+const { title, description, path = '', image = 'cut-vidz' } = Astro.props;
+const fullTitle = title ? `${title} · Light App Suite` : 'Light App Suite';
+const desc = description ?? ui.desc.en;
+const canonical = new URL(u(path), Astro.site).href;
+const ogImage = new URL(u(`logos/png/${image}-512.png`), Astro.site).href;
+---
+<!doctype html>
+<html lang="fr" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={desc} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={u('logos/cut-vidz.svg')} />
+    <link rel="apple-touch-icon" href={u('logos/png/cut-vidz-256.png')} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary" />
+    <script is:inline>
+      (function () {
+        var d = document.documentElement, lang, dark = true;
+        try {
+          lang = localStorage.getItem('las-lang');
+          dark = localStorage.getItem('las-theme') !== 'light';
+        } catch (e) {}
+        if (lang !== 'fr' && lang !== 'en') lang = (navigator.language || 'fr').slice(0, 2) === 'en' ? 'en' : 'fr';
+        d.lang = lang;
+        d.setAttribute('data-theme', dark ? 'dark' : 'light');
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="page">
+      <header class="hd" id="hd">
+        <div class="wrap hd-in">
+          <a href={u()} class="brand"><Logo app="cut-vidz" size={34} /><span class="bt">light app suite</span></a>
+          <nav class="nav">
+            <button type="button" id="menu-btn" aria-expanded="false" aria-controls="menu">Apps ▾</button>
+            <a href={u('install/')}><T t={ui.navInstall} /></a>
+            <a href={u('famille/')}><T t={ui.navFamily} /></a>
+            <a href={ORG}>GitHub</a>
+          </nav>
+          <div class="tools">
+            <button type="button" class="pill-btn" id="lang-btn" aria-label="Language / Langue"><T t={ui.langBtn} /></button>
+            <button type="button" class="pill-btn" id="theme-btn">
+              <span class="if-dark"><T t={ui.themeDark} /></span><span class="if-light"><T t={ui.themeLight} /></span>
+            </button>
+          </div>
+        </div>
+        <div class="menu" id="menu" hidden>
+          <div class="wrap menu-grid">
+            {apps.map((a) => (
+              <a href={u(`${a.id}/`)} class="menu-item tint" style={`--h:${a.h1}`}>
+                <Logo app={a.id} size={48} />
+                <div><div class="nm">{a.name}</div><div class="kd"><T t={a.kind} /></div></div>
+              </a>
+            ))}
+          </div>
+          <div class="wrap menu-all"><a href={u('apps/')}><T t={ui.allApps} /> →</a></div>
+        </div>
+      </header>
+
+      <slot />
+
+      <footer class="ft">
+        <div class="wrap mono">
+          <span>light app suite</span>
+          <span><T t={ui.license} /></span>
+          <a href={ORG}>GitHub</a>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      const root = document.documentElement;
+      const hd = document.getElementById('hd')!;
+      const btn = document.getElementById('menu-btn')!;
+      const menu = document.getElementById('menu')!;
+      const setMenu = (open: boolean) => {
+        menu.hidden = !open;
+        btn.setAttribute('aria-expanded', String(open));
+      };
+      btn.addEventListener('mouseenter', () => setMenu(true));
+      btn.addEventListener('click', () => setMenu(menu.hidden));
+      hd.addEventListener('mouseleave', () => setMenu(false));
+      document.addEventListener('keydown', (e) => e.key === 'Escape' && setMenu(false));
+
+      document.getElementById('lang-btn')!.addEventListener('click', () => {
+        const l = root.lang === 'fr' ? 'en' : 'fr';
+        root.lang = l;
+        try { localStorage.setItem('las-lang', l); } catch {}
+      });
+      document.getElementById('theme-btn')!.addEventListener('click', () => {
+        const dark = root.getAttribute('data-theme') !== 'dark';
+        root.setAttribute('data-theme', dark ? 'dark' : 'light');
+        try { localStorage.setItem('las-theme', dark ? 'dark' : 'light'); } catch {}
+      });
+
+      // Boutons « Copier » : data-copy = texte à copier
+      document.querySelectorAll<HTMLButtonElement>('button.copy').forEach((b) => {
+        b.addEventListener('click', () => {
+          const text = b.dataset.copy ?? '';
+          navigator.clipboard?.writeText(text).catch(() => {});
+          b.classList.add('is-copied');
+          setTimeout(() => b.classList.remove('is-copied'), 1500);
+        });
+      });
+    </script>
+  </body>
+</html>

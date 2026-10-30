@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import T from '../components/T.astro';
+import { apps } from '../data/apps';
+import { ui } from '../data/ui';
+import { u } from '../data/url';
+
+const first = apps[0];
+---
+<Base title="Installation" path="install/" description={ui.installIntro.en}>
+  <section class="wrap" style="padding-top:72px" id="inst" data-apps={JSON.stringify(apps.map((a) => ({ id: a.id, name: a.name, h: a.h1, command: a.command, href: u(`${a.id}/#install`) })))}>
+    <h1 class="h1"><T t={ui.navInstall} /></h1>
+    <p class="lede" style="max-width:640px"><T t={ui.installIntro} /></p>
+    <div class="inst-grid">
+      <div class="picker">
+        {apps.map((a, i) => (
+          <button type="button" class="pick" data-id={a.id} aria-pressed={i === 0 ? 'true' : 'false'}>
+            <Logo app={a.id} size={36} />{a.name}
+          </button>
+        ))}
+      </div>
+      <div class="inst-side" style={`--h:${first.h1}`} id="side">
+        <div class="term">
+          <div class="lbl mono">macOS · Linux</div>
+          <code><i>$ </i><span id="cmd">{first.command}</span></code>
+          <button type="button" class="copy" id="copy" data-copy={first.command}>
+            <span class="idle"><T t={ui.copy} /></span><span class="done"><T t={ui.copied} /></span>
+          </button>
+        </div>
+        <p><T t={ui.rerun} /></p>
+        <a id="guide" href={u(`${first.id}/#install`)}><T t={ui.fullGuide} /> <span id="gname">{first.name}</span> →</a>
+      </div>
+    </div>
+  </section>
+  <div style="height:128px"></div>
+
+  <script>
+    type A = { id: string; name: string; h: number; command: string; href: string };
+    const sec = document.getElementById('inst')!;
+    const data: A[] = JSON.parse(sec.dataset.apps!);
+    const picks = [...document.querySelectorAll<HTMLButtonElement>('.pick')];
+    const select = (id: string) => {
+      const a = data.find((x) => x.id === id) ?? data[0];
+      picks.forEach((p) => p.setAttribute('aria-pressed', String(p.dataset.id === a.id)));
+      document.getElementById('side')!.style.setProperty('--h', String(a.h));
+      document.getElementById('cmd')!.textContent = a.command;
+      document.getElementById('copy')!.dataset.copy = a.command;
+      document.getElementById('gname')!.textContent = a.name;
+      (document.getElementById('guide') as HTMLAnchorElement).href = a.href;
+    };
+    picks.forEach((p) => p.addEventListener('click', () => select(p.dataset.id!)));
+    select(location.hash.slice(1));
+  </script>
+</Base>

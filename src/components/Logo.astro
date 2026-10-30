@@ -1,0 +1,62 @@
+---
+// Port de design-reference/LightLogo.dc.html : même construction (viewBox 64).
+
+interface Props { app: string; size: number }
+const { app, size } = Astro.props;
+
+const M: Record<string, [number, number, string]> = {
+  'cut-vidz': [30, 75, 'LightCutVidz'],
+  'cut-imgz': [165, 215, 'LightCutImgz'],
+  'cut-soundz': [225, 275, 'LightCutSoundz'],
+  'gen-subz': [285, 330, 'LightGenSubz'],
+  'editor-vidz': [355, 305, 'LightEditorVidz'],
+};
+const [h1, h2, label] = M[app];
+const c1 = `oklch(0.72 0.24 ${h1})`;
+const c2 = `oklch(0.66 0.24 ${h2})`;
+const tint = `oklch(0.86 0.15 ${h1})`;
+// id unique par instance : un dégradé défini dans un conteneur display:none (menu) ne s'afficherait pas ailleurs
+const n = ((globalThis as any).__logoN = ((globalThis as any).__logoN ?? 0) + 1);
+const g1 = `lg1-${app}-${n}`;
+const g2 = `lg2-${app}-${n}`;
+---
+<svg viewBox="0 0 64 64" width={size} height={size} style="display:block;flex:none" role="img" aria-label={label}>
+  <defs>
+    <radialGradient id={g1} cx="0.12" cy="0.1" r="0.85"><stop offset="0" stop-color={c1} /><stop offset="1" stop-color={c1} stop-opacity="0" /></radialGradient>
+    <radialGradient id={g2} cx="0.95" cy="0.98" r="0.8"><stop offset="0" stop-color={c2} /><stop offset="1" stop-color={c2} stop-opacity="0" /></radialGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#08080a" />
+  <rect width="64" height="64" rx="14" fill={`url(#${g2})`} />
+  <rect width="64" height="64" rx="14" fill={`url(#${g1})`} />
+  <rect x="6" y="6" width="52" height="52" fill="#08080a" />
+  <g transform="translate(7.5 7.5) scale(0.766)" fill="none" stroke="#fff" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    {app === 'cut-vidz' && (<>
+      <path d="M22 14 L50 32 L22 50 Z" />
+      <path d="M12 54 L52 10" stroke="#08080a" stroke-width="11" />
+      <path d="M12 54 L52 10" stroke={tint} />
+    </>)}
+    {app === 'cut-imgz' && (<>
+      <path d="M19 9 V45 H55" />
+      <path d="M9 19 H45 V55" />
+      <circle cx="31" cy="33" r="4.5" fill={tint} stroke="none" />
+    </>)}
+    {app === 'cut-soundz' && (<>
+      <path d="M10 25 V39" />
+      <path d="M21 15 V49" />
+      <path d="M32 22 V42" stroke={tint} />
+      <path d="M43 11 V53" />
+      <path d="M54 24 V40" />
+    </>)}
+    {app === 'gen-subz' && (<>
+      <rect x="8" y="14" width="48" height="36" rx="8" />
+      <path d="M19 29 H33" />
+      <path d="M19 40 H45" stroke={tint} />
+    </>)}
+    {app === 'editor-vidz' && (<>
+      <path d="M10 19 H34" />
+      <path d="M22 32 H48" stroke={tint} />
+      <path d="M10 45 H40" />
+      <path d="M54 14 V50" stroke-width="4.5" />
+    </>)}
+  </g>
+</svg>

@@ -1,0 +1,55 @@
+---
+import Base from '../layouts/Base.astro';
+import AppList from '../components/AppList.astro';
+import Logo from '../components/Logo.astro';
+import T from '../components/T.astro';
+import { apps } from '../data/apps';
+import { ui } from '../data/ui';
+import { u } from '../data/url';
+---
+<Base description={ui.desc.en}>
+  <section class="wrap hero">
+    <div>
+      <div class="kicker mono"><T t={ui.kicker} /></div>
+      <h1><T t={ui.heroTitle} /></h1>
+      <p><T t={ui.heroSub} /></p>
+      <div class="cta">
+        <a href={u('apps/')} class="btn btn-fill"><T t={ui.ctaApps} /></a>
+        <a href={u('install/')} class="btn btn-line"><T t={ui.ctaInstall} /></a>
+      </div>
+    </div>
+    <div class="stage" id="stage">
+      {apps.map((a, i) => (
+        <a href={u(`${a.id}/`)} class:list={['scene', { on: i === 0 }]} style={`--h:${a.h1};--h2:${a.h2}`} aria-hidden={i === 0 ? undefined : 'true'} tabindex={i === 0 ? undefined : -1}>
+          <div class="halo"></div>
+          <div><Logo app={a.id} size={230} /></div>
+          <div>
+            <div class="nm">{a.name}</div>
+            <div class="kd mono"><T t={a.kind} /></div>
+          </div>
+        </a>
+      ))}
+      <div class="dots">
+        {apps.map((a, i) => <span class:list={{ on: i === 0 }} style={`--h:${a.h1}`}></span>)}
+      </div>
+    </div>
+  </section>
+  <AppList />
+  <div style="height:128px"></div>
+
+  <script>
+    const scenes = [...document.querySelectorAll<HTMLElement>('#stage .scene')];
+    const dots = [...document.querySelectorAll<HTMLElement>('#stage .dots span')];
+    let i = 0;
+    const show = (n: number) => {
+      i = n % scenes.length;
+      scenes.forEach((s, k) => {
+        s.classList.toggle('on', k === i);
+        if (k === i) { s.removeAttribute('aria-hidden'); s.removeAttribute('tabindex'); }
+        else { s.setAttribute('aria-hidden', 'true'); s.tabIndex = -1; }
+      });
+      dots.forEach((d, k) => d.classList.toggle('on', k === i));
+    };
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => show(i + 1), 2600);
+  </script>
+</Base>
