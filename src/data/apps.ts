@@ -1,78 +1,104 @@
-import { A } from './raw.mjs';
+import { content, type Content } from './content';
 
 export type Lang = 'fr' | 'en';
 export type Bi = { fr: string; en: string };
-export type Block = { title: Bi; code: Bi };
+export type Block = { title: Bi; body?: Bi; code?: Bi };
 
-const bi = (t: string[], i = 0): Bi => ({ fr: t[i], en: t[i + 1] });
+const b = (fr: string, en: string): Bi => ({ fr, en });
 const same = (s: string): Bi => ({ fr: s, en: s });
 
-export const ORG = 'https://github.com/light-app-suite';
+// Adresse publique du site : les scripts d'installation y sont servis (voir scripts/fetch-installers.mjs).
+export const SITE = 'https://light-app-suite.github.io/site';
 
 export const IDS = ['cut-vidz', 'cut-imgz', 'cut-soundz', 'gen-subz', 'editor-vidz'] as const;
 export type AppId = (typeof IDS)[number];
 
-// Logo seul : n'apparaît nulle part sur le site (voir README du handoff).
-export const LOGO_IDS = [...IDS, 'scrap-vidz'] as const;
-
-export interface App {
-  id: AppId;
+export interface App extends Omit<Content, 'pkg' | 'h'> {
   n: string;
-  name: string;
   h1: number;
   h2: number;
-  kind: Bi;
-  tagline: Bi;
-  short: Bi;
-  paras: { fr: string[]; en: string[] };
-  features: { n: string; title: Bi; body: Bi }[];
-  examples: { n: string; title: Bi; steps: { fr: string[]; en: string[] } }[];
-  platform: Bi;
-  reqs: Bi[];
   install: Block[];
   uninstall: Block[];
   command: string;
-  repo: string;
+  uninstallCommand: string;
 }
 
-interface Opts {
-  pkg: string;
-  apt: string;
-  ai: string;
-  icon: number;
-  rpm?: boolean;
-  unScript?: boolean;
-  debCode?: string;
-  aiCode?: string;
-}
+function build(id: string, c: Content) {
+  const o = c.pkg;
+  const command = `curl -fsSL ${SITE}/${id}/install.sh | bash`;
+  const uninstallCommand = `curl -fsSL ${SITE}/${id}/uninstall.sh | bash`;
+  const cask = `light-${id}/tap/light-${id}`;
 
-function build(id: string, o: Opts) {
-  const raw = `https://raw.githubusercontent.com/light-${id}/light-${id}/main`;
-  const rel = `https://github.com/light-${id}/light-${id}/releases/latest`;
-  const dlDeb: Bi = { fr: 'Télécharger le .deb depuis', en: 'Download the .deb from' };
-  const dlAi: Bi = { fr: "Télécharger l'AppImage depuis", en: 'Download the AppImage from' };
-  const both = (f: (l: Lang) => string): Bi => ({ fr: f('fr'), en: f('en') });
-
-  const mac: Block = { title: same('macOS (Homebrew)'), code: same(`brew install --cask light-${id}/tap/light-${id}`) };
-  const deb: Block = {
-    title: same('Linux, Debian / Ubuntu'),
-    code: both((l) => `${dlDeb[l]} ${rel}\n${o.debCode ?? `sudo apt install ./${o.pkg}_*_amd64.deb`}`),
-  };
-  const rpm: Block = { title: same('Linux, Fedora / openSUSE'), code: same(`sudo dnf install ./${o.pkg}-*.x86_64.rpm`) };
-  const ai: Block = {
-    title: same('Linux, AppImage'),
-    code: both((l) => `${dlAi[l]} ${rel}\n${o.aiCode ?? `chmod +x ${o.pkg}_*_amd64.AppImage\n./${o.pkg}_*_amd64.AppImage`}`),
-  };
-  const install = [mac, deb, ...(o.rpm ? [rpm] : []), ai];
+  const install: Block[] = [
+    {
+      title: b('macOS', 'macOS'),
+      body: b(
+        "Le script installe l'application avec Homebrew (cask). Si vous préférez, vous pouvez le faire vous-même :",
+        'The script installs the app with Homebrew (cask). If you prefer, you can do it yourself:',
+      ),
+      code: same(`brew install --cask ${cask}`),
+    },
+    {
+      title: same('Linux, Debian / Ubuntu'),
+      body: b(
+        'Le script télécharge le paquet .deb de la dernière version, vérifie sa somme SHA-256 et l’installe avec apt.',
+        'The script downloads the latest .deb, checks its SHA-256 sum and installs it with apt.',
+      ),
+    },
+    ...(o.rpm
+      ? [
+          {
+            title: same('Linux, Fedora / openSUSE'),
+            body: b(
+              'Le script installe le paquet .rpm avec dnf ou zypper.',
+              'The script installs the .rpm package with dnf or zypper.',
+            ),
+          },
+        ]
+      : []),
+    {
+      title: b('Linux, autres distributions', 'Linux, other distributions'),
+      body: b(
+        "Le script place l'AppImage dans ~/.local/bin et l'ajoute au menu des applications (entrée .desktop et icône). Les AppImage demandent FUSE 2 (libfuse2), ou se lancent avec --appimage-extract-and-run.",
+        'The script puts the AppImage in ~/.local/bin and registers it in the applications menu (.desktop entry and icon). AppImages need FUSE 2 (libfuse2), or run with --appimage-extract-and-run.',
+      ),
+    },
+    {
+      title: b('Mise à jour', 'Updating'),
+      body: b(
+        'Relancez la même commande pour passer à la dernière version. Sous macOS, `brew upgrade --cask` fonctionne aussi.',
+        'Run the same command again to move to the latest version. On macOS, `brew upgrade --cask` works too.',
+      ),
+      code: same(`brew upgrade --cask ${cask}`),
+    },
+    {
+      title: b('Vérification des téléchargements', 'Checking downloads'),
+      body: b(
+        "Chaque version publie un fichier SHA256SUMS ; le script compare la somme du paquet téléchargé et refuse de continuer si elle ne correspond pas.",
+        'Each release publishes a SHA256SUMS file; the script compares the downloaded package’s sum and refuses to continue if it does not match.',
+      ),
+    },
+  ];
 
   const uninstall: Block[] = [
     {
-      title: same('macOS (Homebrew)'),
-      code: both(
-        (l) =>
-          `brew uninstall --cask light-${id}\nbrew untap light-${id}/tap\n\n# ${
-            l === 'fr' ? 'Supprimer aussi réglages et caches' : 'Also remove settings and caches'
-          }\nbrew uninstall --zap --cask light-${id}`,
+      title: b('Toutes plateformes, un script', 'All platforms, one script'),
+      body: b(
+        "Détecte comment l'application a été installée (Homebrew, apt, dnf/zypper, AppImage) et la retire, avec son entrée de menu et son icône. Retirer ce qui n'a jamais été installé n'est pas une erreur.",
+        'Detects how the app was installed (Homebrew, apt, dnf/zypper, AppImage) and removes it, with its menu entry and icon. Removing something that was never installed is not an error.',
+      ),
+      code: o.purge
+        ? b(
+            `${uninstallCommand}\n# Ajoutez  -s -- --purge  après bash pour effacer aussi les réglages (langue enregistrée)`,
+            `${uninstallCommand}\n# Add  -s -- --purge  after bash to also delete the settings (saved language)`,
+          )
+        : same(uninstallCommand),
+    },
+    {
+      title: b('macOS (Homebrew)', 'macOS (Homebrew)'),
+      code: b(
+        `brew uninstall --cask light-${id}\nbrew untap light-${id}/tap\n\n# Supprimer aussi réglages et caches\nbrew uninstall --zap --cask light-${id}`,
+        `brew uninstall --cask light-${id}\nbrew untap light-${id}/tap\n\n# Also remove settings and caches\nbrew uninstall --zap --cask light-${id}`,
       ),
     },
     { title: same('Linux, Debian / Ubuntu'), code: same(`sudo apt remove ${o.apt}`) },
@@ -84,43 +110,13 @@ function build(id: string, o: Opts) {
       ),
     },
   ];
-  if (o.unScript) {
-    uninstall.push({
-      title: { fr: 'Toutes plateformes, un script', en: 'All platforms, one script' },
-      code: both(
-        (l) =>
-          `curl -fsSL ${raw}/uninstall.sh | bash\n# ${
-            l === 'fr' ? 'Ajoutez  -s -- --purge  après bash pour tout effacer' : 'Add  -s -- --purge  after bash to delete everything'
-          }`,
-      ),
-    });
-  }
-  return { install, uninstall, command: `curl -fsSL ${raw}/install.sh | bash`, repo: `https://github.com/light-${id}/light-${id}` };
+  return { install, uninstall, command, uninstallCommand };
 }
 
 export const apps: App[] = IDS.map((id, i) => {
-  const d = A[id];
-  const g = build(id, d.o);
-  return {
-    id,
-    n: '0' + (i + 1),
-    name: d.name,
-    h1: d.h[0],
-    h2: d.h[1],
-    kind: bi(d.kind),
-    tagline: bi(d.tagline),
-    short: bi(d.short),
-    paras: { fr: d.paras[0], en: d.paras[1] },
-    features: d.feats.map((f: string[], k: number) => ({ n: String(k + 1).padStart(2, '0'), title: bi(f), body: bi(f, 2) })),
-    examples: d.ex.map((e: any[], k: number) => ({
-      n: '0' + (k + 1),
-      title: bi(e),
-      steps: { fr: e[2], en: e[3] },
-    })),
-    platform: bi(d.platform),
-    reqs: d.reqs.map((r: string[]) => bi(r)),
-    ...g,
-  };
+  const c = content.find((x) => x.id === id)!;
+  const { pkg, h, ...rest } = c;
+  return { ...rest, n: '0' + (i + 1), h1: h[0], h2: h[1], ...build(id, c) } as App;
 });
 
 export const byId = (id: string) => apps.find((a) => a.id === id)!;

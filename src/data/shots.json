@@ -1,0 +1,82 @@
+{
+ "cut-imgz/adjust": [
+  1200,
+  800
+ ],
+ "cut-imgz/crop": [
+  1200,
+  800
+ ],
+ "cut-imgz/filters": [
+  1200,
+  800
+ ],
+ "cut-imgz/main": [
+  1200,
+  800
+ ],
+ "cut-imgz/remove": [
+  1200,
+  800
+ ],
+ "cut-soundz/export": [
+  960,
+  700
+ ],
+ "cut-soundz/main": [
+  960,
+  700
+ ],
+ "cut-vidz/cuts": [
+  1400,
+  860
+ ],
+ "cut-vidz/export": [
+  1400,
+  860
+ ],
+ "cut-vidz/filters": [
+  1400,
+  860
+ ],
+ "cut-vidz/layout": [
+  1400,
+  860
+ ],
+ "cut-vidz/subtitles": [
+  1400,
+  860
+ ],
+ "editor-vidz/editor": [
+  1440,
+  900
+ ],
+ "editor-vidz/export": [
+  1440,
+  900
+ ],
+ "editor-vidz/home": [
+  1440,
+  900
+ ],
+ "gen-subz/export": [
+  1000,
+  780
+ ],
+ "gen-subz/home": [
+  1000,
+  780
+ ],
+ "gen-subz/result": [
+  1000,
+  780
+ ],
+ "cut-vidz/home": [
+  1400,
+  860
+ ],
+ "editor-vidz/new": [
+  1440,
+  900
+ ]
+}

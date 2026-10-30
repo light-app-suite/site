@@ -5,7 +5,7 @@ import '@fontsource/dm-mono/500.css';
 import '../styles/global.css';
 import Logo from '../components/Logo.astro';
 import T from '../components/T.astro';
-import { apps, ORG } from '../data/apps';
+import { apps } from '../data/apps';
 import { ui } from '../data/ui';
 import { u } from '../data/url';
 
@@ -53,8 +53,6 @@ const ogImage = new URL(u(`logos/png/${image}-512.png`), Astro.site).href;
           <nav class="nav">
             <button type="button" id="menu-btn" aria-expanded="false" aria-controls="menu">Apps ▾</button>
             <a href={u('install/')}><T t={ui.navInstall} /></a>
-            <a href={u('famille/')}><T t={ui.navFamily} /></a>
-            <a href={ORG}>GitHub</a>
           </nav>
           <div class="tools">
             <button type="button" class="pill-btn" id="lang-btn" aria-label="Language / Langue"><T t={ui.langBtn} /></button>
@@ -82,7 +80,6 @@ const ogImage = new URL(u(`logos/png/${image}-512.png`), Astro.site).href;
         <div class="wrap mono">
           <span>light app suite</span>
           <span><T t={ui.license} /></span>
-          <a href={ORG}>GitHub</a>
         </div>
       </footer>
     </div>

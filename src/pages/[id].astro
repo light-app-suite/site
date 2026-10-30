@@ -1,7 +1,7 @@
 ---
-import { existsSync } from 'node:fs';
 import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
+import Shot from '../components/Shot.astro';
 import T from '../components/T.astro';
 import { apps, type App } from '../data/apps';
 import { ui } from '../data/ui';
@@ -14,14 +14,14 @@ const { app } = Astro.props as { app: App };
 const others = apps.filter((a) => a.id !== app.id);
 const tabs = [
   ['overview', ui.tabs.overview],
+  ['how', ui.tabs.how],
   ['features', ui.tabs.features],
   ['examples', ui.tabs.examples],
   ['install', ui.tabs.install],
   ['uninstall', ui.tabs.uninstall],
 ] as const;
-// Capture réelle : déposer public/screenshots/{id}.png pour l'afficher dans Présentation.
-const shot = existsSync(`public/screenshots/${app.id}.png`) ? u(`screenshots/${app.id}.png`) : null;
 const style = `--h:${app.h1};--h2:${app.h2}`;
+const alt = (t: { fr: string; en: string }) => ({ fr: `${app.name} : ${t.fr}`, en: `${app.name}: ${t.en}` });
 ---
 <Base title={app.name} path={`${app.id}/`} description={app.tagline.en} image={app.id}>
   <div style={style}>
@@ -34,7 +34,7 @@ const style = `--h:${app.h1};--h2:${app.h2}`;
           <p class="tag"><T t={app.tagline} /></p>
           <div class="cta">
             <a href="#install" class="btn b-dark" data-tab="install"><T t={ui.installBtn} /></a>
-            <a href={app.repo} class="btn b-out">GitHub</a>
+            <a href="#how" class="btn b-out" data-tab="how"><T t={ui.tabs.how} /></a>
           </div>
         </div>
         <div class="logo-big"><div><Logo app={app.id} size={300} /></div></div>
@@ -53,35 +53,74 @@ const style = `--h:${app.h1};--h2:${app.h2}`;
       <div class="panel" role="tabpanel" id="panel-overview" aria-labelledby="tab-overview">
         <div class="two">
           <div class="paras">
-            {app.paras.fr.map((_, i) => <p><T t={{ fr: app.paras.fr[i], en: app.paras.en[i] }} /></p>)}
-            {shot && <img class="shot" src={shot} alt={app.name} loading="lazy" />}
+            {app.intro.map((p) => <p><T t={p} /></p>)}
           </div>
           <div class="card">
             <div class="first"><div class="k mono"><T t={ui.platforms} /></div><div class="v"><T t={app.platform} /></div></div>
             <div><div class="k mono"><T t={ui.licenseLabel} /></div><div class="v">MIT</div></div>
+            {app.formats.map((f) => (
+              <div><div class="k mono"><T t={f.label} /></div><div class="v sm"><T t={f.value} /></div></div>
+            ))}
             <div>
               <div class="k mono" style="margin-bottom:10px"><T t={ui.req} /></div>
               <ul>{app.reqs.map((r) => <li><T t={r} /></li>)}</ul>
             </div>
           </div>
         </div>
+        <div class="hero-shot"><Shot id={app.id} name={app.hero} alt={alt(app.tagline)} eager /></div>
       </div>
 
-      <div class="panel" role="tabpanel" id="panel-features" aria-labelledby="tab-features" hidden>
-        <div class="feats">
-          {app.features.map((f) => (
-            <div><div class="big">{f.n}</div><div class="t"><T t={f.title} /></div><div class="b"><T t={f.body} /></div></div>
+      <div class="panel" role="tabpanel" id="panel-how" aria-labelledby="tab-how" hidden>
+        <h2 class="h3 big"><T t={ui.howTitle} /></h2>
+        {app.how.map((s) => (
+          <div class={`step${s.shot ? '' : ' noshot'}`}>
+            <div class="txt">
+              <h3><T t={s.title} /></h3>
+              <p><T t={s.body} /></p>
+            </div>
+            {s.shot && <Shot id={app.id} name={s.shot} alt={alt(s.title)} />}
+          </div>
+        ))}
+
+        {app.shortcuts.length > 0 && (
+          <>
+            <h2 class="h3 big"><T t={ui.shortcutsTitle} /></h2>
+            <div class="keys">
+              {app.shortcuts.map((k) => (
+                <div><kbd>{k.keys}</kbd><span><T t={k.label} /></span></div>
+              ))}
+            </div>
+          </>
+        )}
+
+        <h2 class="h3 big"><T t={ui.notesTitle} /></h2>
+        <div class="notes">
+          {app.notes.map((n) => (
+            <div><div class="t"><T t={n.title} /></div><p><T t={n.body} /></p></div>
           ))}
         </div>
       </div>
 
+      <div class="panel" role="tabpanel" id="panel-features" aria-labelledby="tab-features" hidden>
+        {app.groups.map((g) => (
+          <section class="grp">
+            <h2 class="h3"><T t={g.title} /></h2>
+            <div class="feats">
+              {g.items.map((f, i) => (
+                <div><div class="big">{String(i + 1).padStart(2, '0')}</div><div class="t"><T t={f.title} /></div><div class="b"><T t={f.body} /></div></div>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+
       <div class="panel" role="tabpanel" id="panel-examples" aria-labelledby="tab-examples" hidden>
-        {app.examples.map((e) => (
+        {app.examples.map((e, k) => (
           <div class="ex">
-            <div><div class="n mono">{e.n}</div><div class="t"><T t={e.title} /></div></div>
+            <div><div class="n mono">{'0' + (k + 1)}</div><div class="t"><T t={e.title} /></div></div>
             <div class="steps">
-              {e.steps.fr.map((_, j) => (
-                <div><span class="i mono">{String(j + 1).padStart(2, '0')}</span><span class="x"><T t={{ fr: e.steps.fr[j], en: e.steps.en[j] }} /></span></div>
+              {e.steps.map((st, j) => (
+                <div><span class="i mono">{String(j + 1).padStart(2, '0')}</span><span class="x"><T t={st} /></span></div>
               ))}
             </div>
           </div>
@@ -97,10 +136,13 @@ const style = `--h:${app.h1};--h2:${app.h2}`;
           <button type="button" class="copy" data-copy={app.command}><span class="idle"><T t={ui.copy} /></span><span class="done"><T t={ui.copied} /></span></button>
         </div>
         <p class="rerun"><T t={ui.rerun} /></p>
-        <h3 class="h3"><T t={ui.manual} /></h3>
         <div class="blocks">
           {app.install.map((b) => (
-            <div class="block"><div class="t"><T t={b.title} /></div><pre><T t={b.code} /></pre></div>
+            <div class="block">
+              <div class="t"><T t={b.title} /></div>
+              {b.body && <p><T t={b.body} /></p>}
+              {b.code && <pre><T t={b.code} /></pre>}
+            </div>
           ))}
         </div>
       </div>
@@ -108,7 +150,11 @@ const style = `--h:${app.h1};--h2:${app.h2}`;
       <div class="panel" role="tabpanel" id="panel-uninstall" aria-labelledby="tab-uninstall" hidden>
         <div class="blocks">
           {app.uninstall.map((b) => (
-            <div class="block"><div class="t"><T t={b.title} /></div><pre><T t={b.code} /></pre></div>
+            <div class="block">
+              <div class="t"><T t={b.title} /></div>
+              {b.body && <p><T t={b.body} /></p>}
+              {b.code && <pre><T t={b.code} /></pre>}
+            </div>
           ))}
         </div>
       </div>

@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import AppList from '../components/AppList.astro';
 import Logo from '../components/Logo.astro';
+import Shot from '../components/Shot.astro';
 import T from '../components/T.astro';
 import { apps } from '../data/apps';
 import { ui } from '../data/ui';
@@ -34,7 +35,26 @@ import { u } from '../data/url';
       </div>
     </div>
   </section>
+  <section class="wrap principles">
+    <h2><T t={ui.principlesTitle} /></h2>
+    <div class="pgrid">
+      {ui.principles.map((p, i) => (
+        <div><div class="pn mono">{'0' + (i + 1)}</div><div class="pt"><T t={p.t} /></div><p><T t={p.d} /></p></div>
+      ))}
+    </div>
+  </section>
   <AppList />
+  <section class="wrap gallery">
+    <h2><T t={ui.galleryTitle} /></h2>
+    <div class="ggrid">
+      {apps.map((a) => (
+        <a href={u(`${a.id}/`)} class="gcard" style={`--h:${a.h1}`}>
+          <Shot id={a.id} name={a.hero} alt={{ fr: `${a.name} : capture d'écran`, en: `${a.name}: screenshot` }} />
+          <div class="gcap"><Logo app={a.id} size={32} /><span>{a.name}</span><span class="mu"><T t={a.kind} /></span></div>
+        </a>
+      ))}
+    </div>
+  </section>
   <div style="height:128px"></div>
 
   <script>

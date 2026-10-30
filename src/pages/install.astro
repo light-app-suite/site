@@ -28,6 +28,7 @@ const first = apps[0];
             <span class="idle"><T t={ui.copy} /></span><span class="done"><T t={ui.copied} /></span>
           </button>
         </div>
+        {apps.map((a, i) => <p class="plat" data-plat={a.id} hidden={i !== 0}><b><T t={ui.platformLine} /> :</b> <T t={a.platform} /></p>)}
         <p><T t={ui.rerun} /></p>
         <a id="guide" href={u(`${first.id}/#install`)}><T t={ui.fullGuide} /> <span id="gname">{first.name}</span> →</a>
       </div>
@@ -47,6 +48,7 @@ const first = apps[0];
       document.getElementById('cmd')!.textContent = a.command;
       document.getElementById('copy')!.dataset.copy = a.command;
       document.getElementById('gname')!.textContent = a.name;
+      document.querySelectorAll<HTMLElement>('[data-plat]').forEach((el) => (el.hidden = el.dataset.plat !== a.id));
       (document.getElementById('guide') as HTMLAnchorElement).href = a.href;
     };
     picks.forEach((p) => p.addEventListener('click', () => select(p.dataset.id!)));

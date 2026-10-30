@@ -4,7 +4,6 @@ const b = (fr: string, en: string): Bi => ({ fr, en });
 
 export const ui = {
   navInstall: b('Installation', 'Installation'),
-  navFamily: b('La famille', 'The family'),
   allApps: b('Toutes les apps', 'All apps'),
   kicker: b('suite logicielle de bureau / 05 outils', 'desktop software suite / 05 tools'),
   heroTitle: b('Couper. Éditer. Sous-titrer.', 'Cut. Edit. Subtitle.'),
@@ -25,16 +24,12 @@ export const ui = {
     'Run the same command again to upgrade to the latest release.',
   ),
   fullGuide: b('Guide complet :', 'Full guide:'),
-  famTitle: b('Une même famille', 'One family'),
-  famSub: b(
-    "Chaque icône partage le même cadre : un carré noir, une lueur dans deux coins, un pictogramme en trait blanc avec un détail en teinte claire. Seule la teinte change d'une application à l'autre.",
-    'Every icon shares one frame: a black square, a glow in two corners, a white stroke pictogram with one detail in a light tint. Only the hue changes from app to app.',
-  ),
   installBtn: b('Installer', 'Install'),
   platforms: b('Plateformes', 'Platforms'),
   licenseLabel: b('Licence', 'License'),
   tabs: {
     overview: b('Présentation', 'Overview'),
+    how: b('Fonctionnement', 'How it works'),
     features: b('Fonctionnalités', 'Features'),
     examples: b("Exemples d'utilisation", 'Usage examples'),
     install: b('Installation', 'Installation'),
@@ -54,5 +49,20 @@ export const ui = {
     'Light App Suite : cinq applications de bureau open source pour couper, éditer et sous-titrer vidéo, image et audio.',
     'Light App Suite: five open source desktop apps to cut, edit and subtitle video, image and audio.',
   ),
+  principlesTitle: b('Pensées pour le travail de tous les jours', 'Made for everyday work'),
+  principles: [
+    { t: b('Local', 'Local'), d: b("Vos fichiers restent sur votre machine. Aucun envoi, aucun compte à créer.", 'Your files stay on your machine. No upload, no account to create.') },
+    { t: b('Libre et sans filigrane', 'Free, no watermark'), d: b("Licence MIT, pas d'abonnement, pas de filigrane sur vos exports.", 'MIT license, no subscription, no watermark on your exports.') },
+    { t: b('Une seule interface', 'One interface'), d: b("Mêmes menus, mêmes thèmes clair et sombre, même choix français ou anglais d'une application à l'autre.", 'Same menus, same light and dark themes, same English or French choice from one app to the next.') },
+    { t: b('Toujours à jour', 'Always up to date'), d: b("Les nouvelles versions s'installent depuis l'application, avec la liste des nouveautés ; les téléchargements sont vérifiés.", 'New versions install from inside the app, with the list of what is new; downloads are verified.') },
+  ],
+  galleryTitle: b('En images', 'In pictures'),
+  howTitle: b('Pas à pas', 'Step by step'),
+  featuresTitle: b('Tout ce que fait l’application', 'Everything the app does'),
+  shortcutsTitle: b('Raccourcis clavier', 'Keyboard shortcuts'),
+  formatsTitle: b('Formats', 'Formats'),
+  notesTitle: b('Bon à savoir', 'Good to know'),
+  seeFeatures: b('Fonctionnalités', 'Features'),
+  platformLine: b('Plateformes', 'Platforms'),
   notFound: b('Page introuvable', 'Page not found'),
 };
