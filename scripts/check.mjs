@@ -34,6 +34,16 @@ for (const id of ids) {
   if (imgs < 4) fail(`${id} : ${imgs} captures seulement`);
 }
 
+// Une capture FR identique à sa version EN serait une capture non traduite.
+const shots = join('public', 'screenshots');
+for (const app of readdirSync(shots)) {
+  for (const f of readdirSync(join(shots, app)).filter((f) => f.endsWith('-fr.webp'))) {
+    const fr = readFileSync(join(shots, app, f));
+    const en = readFileSync(join(shots, app, f.replace('-fr.webp', '-en.webp')));
+    if (fr.equals(en)) fail(`capture identique en FR et EN : ${app}/${f}`);
+  }
+}
+
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);
