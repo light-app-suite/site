@@ -249,8 +249,8 @@ export const content: Content[] = [
         shot: 'remove',
         title: b("5. Effacez un objet, puis exportez", '5. Remove an object, then export'),
         body: b(
-          "Avec « Supprimer un objet », peignez sur ce qu'il faut retirer (la taille du pinceau se règle) puis validez : la zone est reconstruite à partir de ce qui l'entoure. Pour finir, « Exporter » propose PNG, JPEG (qualité réglable), WebP sans perte, BMP et TIFF ; le profil colorimétrique ICC d'origine est conservé et vous pouvez supprimer les métadonnées (EXIF, XMP, IPTC) à l'enregistrement.",
-          'With “Remove an object”, paint over what to remove (brush size is adjustable) then confirm: the area is rebuilt from its surroundings. To finish, “Export” offers PNG, JPEG (adjustable quality), lossless WebP, BMP and TIFF; the original ICC colour profile is kept and you can strip metadata (EXIF, XMP, IPTC) on save.',
+          "Avec « Supprimer un objet », peignez sur ce qu'il faut retirer (la taille du pinceau se règle) puis validez : la zone est reconstruite à partir de ce qui l'entoure. Pour finir, « Exporter » propose PNG, JPEG (qualité réglable), WebP sans perte, BMP et TIFF ; le profil colorimétrique ICC d'origine est conservé. Le panneau EXIF affiche les métadonnées de la photo et permet d'enregistrer une copie sans EXIF, XMP ni IPTC.",
+          'With “Remove an object”, paint over what to remove (brush size is adjustable) then confirm: the area is rebuilt from its surroundings. To finish, “Export” offers PNG, JPEG (adjustable quality), lossless WebP, BMP and TIFF; the original ICC colour profile is kept. The EXIF panel shows the photo’s metadata and can save a copy without EXIF, XMP or IPTC.',
         ),
       },
     ],
@@ -301,7 +301,7 @@ export const content: Content[] = [
         items: [
           { title: b('Cinq formats', 'Five formats'), body: b('PNG, JPEG (qualité réglable), WebP sans perte, BMP et TIFF.', 'PNG, JPEG (adjustable quality), lossless WebP, BMP and TIFF.') },
           { title: b('Profil ICC conservé', 'ICC profile kept'), body: b("Les couleurs de l'original sont préservées à l'export.", 'The original’s colours are preserved on export.') },
-          { title: b('Métadonnées', 'Metadata'), body: b("Panneau EXIF (date, appareil, GPS, ISO…) et option pour supprimer EXIF, XMP et IPTC à l'enregistrement.", 'EXIF panel (date, camera, GPS, ISO…) and an option to strip EXIF, XMP and IPTC when saving.') },
+          { title: b('Métadonnées', 'Metadata'), body: b("Panneau EXIF (date, appareil, GPS, ISO…) et bouton « Enregistrer sans EXIF » : une copie sans EXIF, XMP ni IPTC.", 'EXIF panel (date, camera, GPS, ISO…) and a “Save without EXIF” button: a copy without EXIF, XMP or IPTC.') },
           { title: b('100 % local', '100% local'), body: b("Aucune image n'est envoyée, aucun compte n'est demandé.", 'No image is ever uploaded, no account is required.') },
         ],
       },
@@ -321,7 +321,7 @@ export const content: Content[] = [
       { title: b('Redresser une photo', 'Straighten a photo'), steps: [b('Ouvrez la photo.', 'Open the photo.'), b("Dans Rotation, réglez l'angle : l'aperçu suit en direct.", 'In Rotate, set the angle: the preview follows live.'), b('Recadrez les bords vides.', 'Crop the empty edges.'), b('Exportez en JPEG.', 'Export as JPEG.')] },
       { title: b('Donner une ambiance à une photo', 'Give a photo a mood'), steps: [b('Ouvrez la photo et passez par « Ajuster » : exposition, vibrance, balance des blancs.', 'Open the photo and go through “Adjust”: exposure, vibrance, white balance.'), b('Essayez un filtre (Lomo, Fondu, Drame) et réglez son intensité.', 'Try a filter (Lomo, Fade, Drama) and set its intensity.'), b('Ajoutez une vignette ou du grain de film.', 'Add a vignette or film grain.'), b('Comparez avec l’historique, puis exportez.', 'Compare using the history, then export.')] },
       { title: b('Retirer un élément gênant', 'Remove an unwanted element'), steps: [b("Ouvrez l'image et choisissez « Supprimer un objet ».", 'Open the image and pick “Remove an object”.'), b('Peignez sur ce qu’il faut retirer.', 'Paint over what to remove.'), b('Validez ; annulez si le résultat ne convient pas.', 'Confirm; undo if the result is not right.')] },
-      { title: b('Convertir et nettoyer avant de publier', 'Convert and clean before publishing'), steps: [b("Ouvrez l'image.", 'Open the image.'), b('Dans Exporter, choisissez WebP ou JPEG.', 'In Export, choose WebP or JPEG.'), b('Cochez la suppression des métadonnées (position GPS, appareil…).', 'Tick metadata removal (GPS position, camera…).'), b('Exportez.', 'Export.')] },
+      { title: b('Convertir et nettoyer avant de publier', 'Convert and clean before publishing'), steps: [b("Ouvrez l'image.", 'Open the image.'), b('Ouvrez le panneau EXIF pour voir ce que la photo révèle (position GPS, appareil…).', 'Open the EXIF panel to see what the photo reveals (GPS position, camera…).'), b('Cliquez sur « Enregistrer sans EXIF » pour obtenir une copie nettoyée.', 'Click “Save without EXIF” to get a cleaned copy.'), b('Ou exportez directement en WebP ou JPEG depuis Exporter.', 'Or export straight to WebP or JPEG from Export.')] },
     ],
     platform: b('macOS (Apple Silicon et Intel) et Linux (.deb, .rpm, AppImage).', 'macOS (Apple Silicon and Intel) and Linux (.deb, .rpm, AppImage).'),
     reqs: [b('Rien à installer en plus.', 'Nothing else to install.'), b('Les téléchargements sont vérifiés avec le fichier SHA256SUMS de la version publiée.', 'Downloads are checked against the release’s SHA256SUMS.')],
